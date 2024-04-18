@@ -13,7 +13,7 @@ const modal = ({ isVisible, children, onClose}) => {
     onClick={handleClose}
     >
       <div className="w-[600px] flex flex-col">
-        <button className="place-self-end p-1 mr-1 text-gray-100"
+        <button className="place-self-end p-1 pl-2 pr-2  text-gray-100 hover:bg-slate-500 rounded-full"
         onClick={() => onClose()}
         >X</button>
         <div className="">{children}</div>

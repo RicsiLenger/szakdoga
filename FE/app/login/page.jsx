@@ -1,21 +1,41 @@
-"use client";
+"use client"
 
 import React, { Fragment, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
+import axios from "axios";
 import Modal from "../ui/modal/modal";
 import Register from "../ui/register/register";
+import { useRouter } from "next/navigation";
 
-export default function page() {
+
+export default function login() {
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
+
+  const router = useRouter()
   const [showRegisterModal, setShowRegisterModal] = useState(false)
+
+  const handleSignin = async (e) => {
+    e.preventDefault()
+    try {
+      const response = await axios.post('http://localhost:3001/login', user)
+      const { token } = response.data;
+      console.log("Login Token Is: " + token)
+      localStorage.setItem('token', token)
+      router.push("/")
+    } catch (error) {
+      console.log("Login Failed: " + error)      
+    }
+  }
 
   const handleRegisterClick = () => {
     setShowRegisterModal(true)
   }
+
+
 
   return (
     <Fragment>
@@ -24,7 +44,7 @@ export default function page() {
         <div className="max-w-2xl w-full">
           <form className="rounded-lg shadow-md max-w-md">
             <h1 className="text-3xl font-bold text-center text-white mb-6">
-              Login
+              Sign In
             </h1>
             <div className="mb-4 relative bg-none">
               <input
@@ -60,9 +80,10 @@ export default function page() {
             </div>
             <button
               type="submit"
+              onClick={handleSignin}
               className="w-full h-10 bg-gradient-to-r from-blue-800 to-blue-600 text-white rounded-md focus:outline-none hover:from-blue-800 hover:to-blue-500 transition duration-300"
             >
-              Bejelentkezés
+              Sign In
             </button>
 
           </form>

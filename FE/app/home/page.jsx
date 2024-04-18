@@ -1,11 +1,13 @@
+
+
 import React from "react";
 import Cars from "../ui/cars/cars";
 import Header from "../ui/header/header";
-const page = () => {
+const home = () => {
   return (
     
       <div>
-      <Header />
+        <Header />
       <div className="flex items-center justify-center h-[70vh]">
         <Cars />
       </div>
@@ -13,4 +15,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default home;
