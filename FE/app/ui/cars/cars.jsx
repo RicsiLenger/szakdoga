@@ -14,8 +14,7 @@ const Cars = () => {
   const [showDel, setShowDel] = useState(false);
   const [userCars, setUserCars] = useState([]);
   const [tooltipCarId, setTooltipCarId] = useState(null);
-  const [selectedCarId, setSelectedCarId] = useState(null)
-
+  const [selectedCarId, setSelectedCarId] = useState(null);
 
   useEffect(() => {
     const fetchUserCars = async () => {
@@ -24,9 +23,7 @@ const Cars = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setUserCars(response.data);
-        console.log(response.data)
-
-
+        console.log(response.data);
       } catch (error) {
         console.log("Error fetching user cars:", error);
       }
@@ -35,16 +32,34 @@ const Cars = () => {
     fetchUserCars();
   }, []);
 
+  const handleDelete = async (car) => {
+    try {
+      await axios.delete("http://localhost:3001/cars/" + `${car.id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      console.log(`Car with Name: ${car.Name} deleted successfully.`);
+      alert(`Car with Name: ${car.Name} deleted successfully.`)
+
+      const response = await axios.get("http://localhost:3001/cars", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setUserCars(response.data);
+    } catch (error) {
+      console.log("Error Deleting Car" + error);
+    }
+  };
+
   const handleMouseEnter = (carId) => {
     setTooltipCarId(carId);
   };
 
   const handleMouseLeave = () => {
-    setTooltipCarId(null)
+    setTooltipCarId(null);
   };
 
   const handleCarClick = (car) => {
-    setSelectedCarId(car)
+    setSelectedCarId(car);
     setShowCarModal(true);
   };
 
@@ -56,11 +71,11 @@ const Cars = () => {
     setShowDel((prevState) => !prevState);
   };
 
-  const handlexClick = (e) => {
+  const handlexClick = (e, car) => {
     e.stopPropagation();
     setShowDel(false);
+    handleDelete(car);
   };
-
 
   return (
     <Fragment>
@@ -79,9 +94,8 @@ const Cars = () => {
         <div className="min-w-[40vw] min-h-[30vh] overflow-auto">
           <table className="w-full h-full">
             <tbody className="flex flex-wrap p-2">
-            {userCars.map((car) => (
+              {userCars.map((car) => (
                 <tr className="flex items-center">
-                  
                   <td
                     key={car.id}
                     className="border-2 text-5xl p-2 m-1 rounded-[10px] shadow-md border-slate-500 hover:bg-slate-500 flex-shrink-0"
@@ -90,41 +104,38 @@ const Cars = () => {
                     onClick={() => handleCarClick(car)}
                   >
                     <div className="relative flex">
-                      <IoCarSportOutline 
-                      />
+                      <IoCarSportOutline />
                       {showDel && (
-                      <div 
-                      onClick={handlexClick}
-                      className="absolute top-0 right-0 -mt-4 -mr-4 text-base h-5 w-5 p-[5px] m-[5px] rounded-full flex justify-center bg-red-600 cursor-pointer">
-                        <p className="absolute -top-[3px] left-[5px]">x</p>
+                        <div
+                          onClick={(e) => handlexClick(e, car)}
+                          className="absolute top-0 right-0 -mt-4 -mr-4 text-base h-5 w-5 p-[5px] m-[5px] rounded-full flex justify-center bg-red-600 cursor-pointer"
+                        >
+                          <p className="absolute -top-[3px] left-[5px]">x</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {tooltipCarId === car.id && (
+                      <div className="bg-gray-800 text-white text-sm px-2 py-1 absolute mt-2 rounded">
+                        {car.Name}
                       </div>
                     )}
-                    </div>
-                    
-                    {tooltipCarId === car.id && (
-                        <div className="bg-gray-800 text-white text-sm px-2 py-1 absolute mt-2 rounded">
-                          {car.Name}
-                        </div>
-                  )}
                   </td>
-                  </tr>
-                  ))}
-                  <tr className="flex items-center">
-                  <td className="border-2 text-5xl p-2 m-1 rounded-[10px] shadow-md border-slate-500 hover:bg-slate-500 flex-shrink-0">
-                    <button className="flex" onClick={handleAddClick}>
-                      <FaPlus />
-                    </button>
-                  </td>
-                  
                 </tr>
+              ))}
+              <tr className="flex items-center">
+                <td className="border-2 text-5xl p-2 m-1 rounded-[10px] shadow-md border-slate-500 hover:bg-slate-500 flex-shrink-0">
+                  <button className="flex" onClick={handleAddClick}>
+                    <FaPlus />
+                  </button>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
       <Modal isVisible={showCarModal} onClose={() => setShowCarModal(false)}>
-        {selectedCarId && 
-        <SingleCar car={selectedCarId}/>
-      }
+        {selectedCarId && <SingleCar car={selectedCarId} />}
       </Modal>
       <Modal isVisible={showAddModal} onClose={() => setShowAddModal(false)}>
         <AddCar />

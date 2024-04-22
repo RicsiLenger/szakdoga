@@ -21,7 +21,7 @@
 
 body{
   color: var(--text);
-  background-color: #0C2D52;
+  background-color: #000000;
 }
 
 a{
@@ -33,19 +33,16 @@ a{
   width: 10px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
   background: #888;
   border-radius: 5px;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: #000;
   border-radius: 5px;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }

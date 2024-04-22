@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { redirect, useRouter } from "next/navigation";
-import Login from "@/app/login/page";
-import Home from "@/app/home/page";
+import { useRouter } from "next/navigation";
+
 
 
 function App() {
@@ -32,13 +31,17 @@ function App() {
     setLoggedIn(false);
   };
 
+  useEffect(() => {
+    if (!loggedIn) {
+      router.push("/login");
+    } else {
+      router.push("/home");
+    }
+  }, [loggedIn]);
+  
+
   return (
     <div>
-      {!loggedIn && router.push("/login")}
-      {loggedIn && (
-        
-           router.push("/home")
-      )}
     </div>
   );
 }

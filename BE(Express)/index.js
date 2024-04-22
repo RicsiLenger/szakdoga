@@ -118,38 +118,38 @@ app.get('/cars', authenticate, async (req, res) => {
   });
 });
 
-// app.get('/cars/:carId', authenticate, (req, res) => {
-//   const userId = req.userId;
-//   const carId = req.carId;
+app.get('/cars/:carId', authenticate, (req, res) => {
+  const userId = req.userId;
+  const carId = req.carId;
 
-//   const q = `SELECT * FROM car c JOIN connect cn ON c.id = cn.car_id WHERE cn.user_id = ? AND c.id = ?`
+  const q = `SELECT * FROM car c JOIN connect cn ON c.id = cn.car_id WHERE cn.user_id = ? AND c.id = ?`
 
-//   db.query(q, [userId, carId], (err, result) => {
-//     if (err) {
-//       res.status(500).json({ message: 'Error fetching car details' });
-//     } else {
-//       if (result.length === 0) {
-//         res.status(404).json({ message: 'Car not found or not associated with user' });
-//       } else {
-//         const carDetails = result[0];
-//         res.json(carDetails);
-//       }
-//     }
-//   });
-// })
+  db.query(q, [userId, carId], (err, result) => {
+    if (err) {
+      res.status(500).json({ message: 'Error fetching car details' });
+    } else {
+      if (result.length === 0) {
+        res.status(404).json({ message: 'Car not found or not associated with user' });
+      } else {
+        const carDetails = result[0];
+        res.json(carDetails);
+      }
+    }
+  });
+})
 
 
 
 app.post('/cars/add', authenticate, async (req, res) => {
   const userId = req.userId;
-  const {name, type, yom, enginecap, fuel, perf, color, wheelsize, extras, description} = req.body
+  const {name, type, yom, enginecap, fuel, perf, mileage, trans, color, wheelsize, extras, description} = req.body
 
-  const carInsertQ = `INSERT INTO car (Name, Type, YoM, EngineCap, Fuel, Perf, Color, WheelSize, Extras, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const carInsertQ = `INSERT INTO car (Name, Type, YoM, EngineCap, Fuel, Perf, Mileage, Trans, Color, WheelSize, Extras, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   const connectInsertQ = `INSERT INTO connect (user_id, car_id) VALUES (?, ?)`;
 
   try {
     
-    const carResult = await dbProm.query(carInsertQ, [name, type, yom, enginecap, fuel, perf, color, wheelsize, extras, description]);
+    const carResult = await dbProm.query(carInsertQ, [name, type, yom, enginecap, fuel, perf, mileage, trans, color, wheelsize, extras, description]);
     carId = carResult[0].insertId
 
     if (!carId) {
@@ -163,7 +163,27 @@ app.post('/cars/add', authenticate, async (req, res) => {
     console.error('Error adding car: '+error)
     res.status(500).json({ message: 'Failed to add car '})
   }
+})
 
+app.delete("/cars/:carId", authenticate, async (req, res) => {
+  const carId = req.params.carId
+
+  const q = `DELETE FROM car WHERE id = ?`
+
+  if (!carId) {
+    throw new Error('Failed to get car ID after insertion');
+  }
+
+  db.query(q, [carId], (err, result) => {
+    if(err) {
+      res.status(500).json("Error Deleting Car"+err)
+    }else{
+      if (result.length === 0) {
+        res.status(404).json({ message: 'Car not found' });
+      } else {
+        res.json(result)
+    }}
+  })
 })
 
 app.listen(port, () => {

@@ -33,7 +33,7 @@ const register = () => {
 
   return (
     <div className="flex justify-center items-center">
-      <div className="p-8 rounded-[20px] bg-slate-800 shadow-md max-w-md w-[42vw] font-bold">
+      <div className="p-8 rounded-[20px] bg-black bg-opacity-90 shadow-md max-w-md w-[400px] font-bold">
         <h2 className="text-3xl mb-6 text-center">Sign Up</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -81,7 +81,7 @@ const register = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-2 bg-gradient-to-r from-blue-800 to-blue-600 text-white rounded-md focus:outline-none hover:from-blue-800 hover:to-blue-500 transition duration-300"
+            className="w-full py-2 bg-gradient-to-r from-slate-800 to-gray-400 text-white rounded-md focus:outline-none hover:from-gray-400 hover:to-slate-800 transition-all duration-300"
           >
             Sign Up
           </button>

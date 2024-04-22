@@ -4,7 +4,8 @@ const modal = ({ isVisible, children, onClose}) => {
   if (!isVisible) return null;
 
     const handleClose = (e) => {
-        if(e.target.id === 'wrapper') onClose();
+        if(e.target.id === 'wrapper') 
+        onClose();
     }
 
   return (
@@ -12,7 +13,7 @@ const modal = ({ isVisible, children, onClose}) => {
     id="wrapper"
     onClick={handleClose}
     >
-      <div className="w-[600px] flex flex-col">
+      <div className="w-[600px] flex flex-col items-center">
         <button className="place-self-end p-1 pl-2 pr-2  text-gray-100 hover:bg-slate-500 rounded-full"
         onClick={() => onClose()}
         >X</button>
