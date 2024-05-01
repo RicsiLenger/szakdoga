@@ -17,7 +17,6 @@ app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   const hashedPw = await bcrypt.hash(password, 10);
-  console.log(hashedPw);
 
   const q = "INSERT INTO user (username, email, password) VALUES (?, ?, ?)";
 
@@ -50,7 +49,7 @@ app.post("/login", async (req, res) => {
       const match = await bcrypt.compare(password, result[0].password);
       if (match) {
         const token = jwt.sign({ userId: result[0].id }, 'secret_key', {
-          expiresIn: "1h",
+          expiresIn: "2h",
         });
         res.json({ message: "Login Succesful", token });
       } else {
@@ -94,8 +93,7 @@ app.get('/profile', authenticate, (req, res) => {
             res.status(500).json({message: "Error fetching details"})
         }else{
             res.json({
-              username: result[0].username, 
-              email: result[0].email
+              username: result[0].username
             })
         }
     })
@@ -117,28 +115,6 @@ app.get('/cars', authenticate, async (req, res) => {
       }
   });
 });
-
-app.get('/cars/:carId', authenticate, (req, res) => {
-  const userId = req.userId;
-  const carId = req.carId;
-
-  const q = `SELECT * FROM car c JOIN connect cn ON c.id = cn.car_id WHERE cn.user_id = ? AND c.id = ?`
-
-  db.query(q, [userId, carId], (err, result) => {
-    if (err) {
-      res.status(500).json({ message: 'Error fetching car details' });
-    } else {
-      if (result.length === 0) {
-        res.status(404).json({ message: 'Car not found or not associated with user' });
-      } else {
-        const carDetails = result[0];
-        res.json(carDetails);
-      }
-    }
-  });
-})
-
-
 
 app.post('/cars/add', authenticate, async (req, res) => {
   const userId = req.userId;
@@ -165,7 +141,7 @@ app.post('/cars/add', authenticate, async (req, res) => {
   }
 })
 
-app.delete("/cars/:carId", authenticate, async (req, res) => {
+app.delete("/cars/:carId", async (req, res) => {
   const carId = req.params.carId
 
   const q = `DELETE FROM car WHERE id = ?`
@@ -185,6 +161,26 @@ app.delete("/cars/:carId", authenticate, async (req, res) => {
     }}
   })
 })
+
+app.put("/cars/:carId", async (req, res) => {
+  const carId = req.params.carId;
+  const { Name, Type, YoM, EngineCap, Fuel, Perf, Mileage, Trans, Color, WheelSize, Extras, Description } = req.body;
+
+  const q = `UPDATE car SET Name = ?, Type = ?, YoM = ?, EngineCap = ?, Fuel = ?, Perf = ?, Mileage = ?, Trans = ?, Color = ?, WheelSize = ?, Extras = ?, Description = ? WHERE id = ?`
+
+  try {
+    const result = await dbProm.query(q, [Name, Type, YoM, EngineCap, Fuel, Perf, Mileage, Trans, Color, WheelSize, Extras, Description, carId])
+    if (result.affectedRows === 0){
+      res.status(404).json({message: 'Car not found'})
+    }else{
+      res.json({message:'Car updated succesfully'})
+    }
+  } catch (error) {
+    console.error('Error updating car'+error)
+    res.status(500).json({ message: 'Failed to update car' });
+  }
+})
+
 
 app.listen(port, () => {
   console.log("Server is running..");

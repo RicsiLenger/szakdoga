@@ -20,13 +20,14 @@ const register = () => {
     
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:3001/register",
         formData
       );
       alert("Registration went well: " + formData.username)
       console.log("Registration succesful");
     } catch (error) {
+      alert("Registration failed.. Try again!")
       console.log("Registration failed" + error);
     }
   };

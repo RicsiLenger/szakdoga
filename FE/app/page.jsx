@@ -26,11 +26,6 @@ function App() {
     checkLoggedIn();
   }, []);
 
-  const handlelogOut = () => {
-    localStorage.removeItem('token');
-    setLoggedIn(false);
-  };
-
   useEffect(() => {
     if (!loggedIn) {
       router.push("/login");

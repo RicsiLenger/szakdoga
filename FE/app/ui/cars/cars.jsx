@@ -3,15 +3,20 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { IoCarSportOutline } from "react-icons/io5";
 import { FaPlus, FaDeleteLeft } from "react-icons/fa6";
+import { RxPencil2 } from "react-icons/rx";
+import { PiPencilDuotone } from "react-icons/pi";
 import Modal from "../modal/modal";
 import AddCar from "./AddCar";
 import SingleCar from "./singleCar";
+import UpdateCar from "./UpdateCar";
 import axios from "axios";
 
 const Cars = () => {
   const [showCarModal, setShowCarModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDel, setShowDel] = useState(false);
+  const [showUpdate, setShowUpdate] = useState(false);
+  const [showPipe, setShowPipe] = useState(false);
   const [userCars, setUserCars] = useState([]);
   const [tooltipCarId, setTooltipCarId] = useState(null);
   const [selectedCarId, setSelectedCarId] = useState(null);
@@ -39,7 +44,7 @@ const Cars = () => {
       });
 
       console.log(`Car with Name: ${car.Name} deleted successfully.`);
-      alert(`Car with Name: ${car.Name} deleted successfully.`)
+      alert(`Car with Name: ${car.Name} deleted successfully.`);
 
       const response = await axios.get("http://localhost:3001/cars", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -68,6 +73,7 @@ const Cars = () => {
   };
 
   const handleDelClick = () => {
+    setShowPipe(false)
     setShowDel((prevState) => !prevState);
   };
 
@@ -77,6 +83,18 @@ const Cars = () => {
     handleDelete(car);
   };
 
+  const handleUpdateClick = () => {
+    setShowDel(false)
+    setShowPipe((prevState) => !prevState);
+  };
+
+  const handlePipeclick = (e, car) => {
+    e.stopPropagation();
+    setShowPipe(false)
+    setSelectedCarId(car);
+    setShowUpdate(true)
+  }
+
   return (
     <Fragment>
       <div className="border-2 p-2.5 m-[15px] rounded-[20px] min-w-[45vw] min-h-[35vh] bg-opacity-30 shadow-md border-slate-500">
@@ -84,7 +102,13 @@ const Cars = () => {
           <p className="text-xl">Cars</p>
           <div className="flex items-center ml-auto">
             <button
-              className="rounded-full p-2 hover:bg-slate-500"
+              className={`rounded-full p-2 hover:bg-slate-500 ${showPipe ? 'bg-slate-500' : ''}`}
+              onClick={handleUpdateClick}
+            >
+              <RxPencil2 />
+            </button>
+            <button
+              className={`rounded-full p-2 hover:bg-slate-500 ${showDel ? 'bg-slate-500' : ''}`}
               onClick={handleDelClick}
             >
               <FaDeleteLeft />
@@ -105,6 +129,15 @@ const Cars = () => {
                   >
                     <div className="relative flex">
                       <IoCarSportOutline />
+                      {showPipe && (
+                        <div
+                          onClick={(e) => handlePipeclick(e, car)}
+                          className="absolute top-0 right-0 -mt-4 -mr-6 text-xl h-5 w-5 m-[4px] p-4 rounded-full flex justify-center cursor-pointer"
+                        >
+                          <p className="absolute -top-[3px] left-[5px]"><PiPencilDuotone /></p>
+                        </div>
+                      )}
+
                       {showDel && (
                         <div
                           onClick={(e) => handlexClick(e, car)}
@@ -139,6 +172,10 @@ const Cars = () => {
       </Modal>
       <Modal isVisible={showAddModal} onClose={() => setShowAddModal(false)}>
         <AddCar />
+      </Modal>
+      <Modal isVisible={showUpdate} onClose={() => setShowUpdate(false)}>
+        {selectedCarId && <UpdateCar car={selectedCarId}/>}
+
       </Modal>
     </Fragment>
   );
